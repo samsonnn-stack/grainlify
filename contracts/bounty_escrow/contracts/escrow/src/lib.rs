@@ -2008,7 +2008,12 @@ mod escrow_status_transition_tests {
 
             // Write escrow directly to contract storage
             self.env.as_contract(&self.contract_id, || {
-                crate::BountyEscrowContract::write_escrow(&self.env, bounty_id, &escrow).unwrap();
+                // No public writer exists for this key; the fixture seeds storage
+                // directly, matching how the contract reads it elsewhere.
+                self.env
+                    .storage()
+                    .persistent()
+                    .set(&DataKey::Escrow(bounty_id), &escrow);
             });
         }
     }
